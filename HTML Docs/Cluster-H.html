@@ -1,0 +1,133 @@
+<html> 
+<script
+ src="https://code.jquery.com/jquery-3.1.1.js"
+ integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+ crossorigin="anonymous"></script>
+ <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
+ <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/additional-methods.min.js"></script>
+
+
+
+<style>
+.hidden1{
+	display: none;
+}
+.input:invalid {
+  border: 1px solid red;
+}
+
+.input:valid {
+  border: 1px solid green;
+}
+</style>
+
+
+<script type="text/javascript" >
+
+function Hcluster()
+{
+  var data = {
+    "Inputs": {
+      "input1":{
+        "ColumnNames": ["sta_code", "BuildingID", "meternumb", "type", "Normalised"],
+                    "Values": [[]]
+      }
+    },
+    "GlobalParameters": {}
+  }
+
+  
+
+  var textbox = document.getElementsByClassName('a');
+  var input =[];
+  for(var i=0;i<textbox.length;i++){
+    input.push(textbox[i].value);
+  }
+  data.Inputs.input1.Values = [input];
+ document.getElementById('output').innerHTML=JSON.stringify(data);
+
+ var settings = {
+ "async": true,
+ "crossDomain": true,
+ "url": "https://ussouthcentral.services.azureml.net/workspaces/a5d415105df14267a75151b4aca0b5df/services/cfe88ac250474be88e93974edad5cce1/execute?api-version=2.0&details=true",
+ "method": "POST",
+ contentType: 'application/json',
+ data: JSON.stringify(data),
+ "headers": {
+   "authorization": "Bearer WK4prkpPIS9S3H40Gevr6o/2OFiO7kVCJSUnO+HpkVKYylTQeTWp3sXjjRO4ka3gZzjrxDFz+yyAlrHRrWc0vg==",
+   "content-type": "application/json",
+   "cache-control": "no-cache",
+   "postman-token": "74c43a8e-be48-5551-5341-25dc2f867e0a"
+ }
+}
+document.getElementById('progressBar').style.display="block";
+$.ajax(settings).done(function (response) {
+document.getElementById('progressBar').style.display="none";
+ console.log(response);
+ console.log(response.Results.output1.value.Values);
+    var hcl = response.Results.output1.value.Values[0];
+   
+/*
+    document.getElementById('output1').value = lr;
+    document.getElementById('output2').value = nn;
+    document.getElementById('output3').value = rf;
+*/
+// document.getElementById('output').innerHTML=JSON.stringify(response.Results.output1.value.Values[0][0]);
+document.getElementById('output').innerHTML="Cluster Assignment: "+hcl ;
+//outputNeuNet  outputRanFor
+
+});
+
+}
+
+function displayForm(){
+  document.getElementById("Hcluster").style.display="block";
+}
+
+
+
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    if (charCode == 46 && evt.srcElement.value.split('.').length>1) {
+        return false;
+    }
+    if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+    return true;
+}
+
+function handleSta(input) {
+    if (/\D/g.test(input.value)) input.value = input.value.replace(/\D/g,'')
+    if (input.value < 1 || input.value > 2){
+      alert("Input should be 1 or 2");
+      input.value = "";
+    }
+  }
+
+
+
+</script>
+
+<body>
+<h1>Assignment 3 - TEAM 8</h1>
+
+
+<p>Please select the model you want to run</p>
+
+<input type="button" onclick="displayForm()" value="Hierarchical Cluster">
+<form id=Hcluster style="display:none;">
+  Sta code:<input class="a" id="input1" name="sta_code" onKeyUp="handleSta(this)"><br>
+  BuildingID:<input class="a" id="input2" name="BuildingID" > <br>
+  MeterNumber:<input class="a" id="input3" name="MeterNumber" "> <br>  
+  Type:<input class="a" id="input4" name="Type"><br>
+  Normalised(Base Hour Usage):<input class="a" id="input5" name="Normalised"><br>
+  <button type="button" onclick="Hcluster()">H_Cluster!</button>
+</form>
+<h3 id="progressBar" style="display:none">Loading...</h3>
+<br>
+<div id="input"></div><br>
+<div id="output"></div><br>
+
+</body>
+
+</html>
